@@ -133,7 +133,6 @@ my (
 
 my $progname = basename($0);
 my $basedir = $Bin;
-print $basedir . "\n";
 my $version = '0.6';
 
 GetOptions (
