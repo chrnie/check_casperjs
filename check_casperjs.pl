@@ -44,59 +44,113 @@
 # those contributions and any derivatives thereof.
 #
 # Nagios and the Nagios logo are registered trademarks of Ethan Galstad.
+=head1 NAME
 
-# includes
+check_casperjs.pl - calls casperjs usecases and returns results to icinga/shinken/nagios ...
+
+=head1 SYNOPSIS
+
+check_casperjs.pl
+-v
+-h
+-V
+-e
+-f
+
+Requirements:
+This plugin needs casperjs and phantomjs
+
+Usage: 
+check_casperjs.pl -w WARNING -c CRITICAL -t tests/
+check_casperjs.pl -w WARNING -c CRITICAL --url='http://my.example.com' --screenshots -o OPTION1=bla OPTION2=blub OPTIONn=bli
+
+=head1 OPTIONS
+
+=over
+
+=item -c|--critical
+
+critical threshold in ms for overall duration
+
+=item -w|--warning
+
+warning threshold in ms for overall duration
+
+=item -o|--casperjs-options
+
+add extra options for casperjs
+
+=item -t|--test-case
+
+test case for casperjs
+
+=item -h|--help
+
+display this help and exit
+
+=item     --usage
+
+display a short usage instruction
+
+=item -p|--proxy
+
+need proxy?
+
+=item -u|--url
+
+for variable urls
+
+=item -s|--screenshots
+
+capture screenshots on each step.
+
+=item -v|--verbose
+
+be verbose
+
+=item -V|--version
+
+output version information and exit
+
+=cut
+
+
 use strict;
-use Getopt::Long;
+use Getopt::Long qw(:config no_ignore_case bundling);
+use Pod::Usage;
 use File::Basename;
 use Data::Dumper;
 use XML::Simple;
 
 # declaration of variables
-use vars qw(
-        $version
-        $progname
-        $opt_critical
-        $opt_warning
-        $opt_help
-        $opt_usage
-        $opt_version
-        $opt_verbose
-        $opt_testcase
-        $opt_proxy
-        $opt_tmpdir
-        $opt_url
-        $opt_screenshots
-        %opt_casperopts
-        %states
-        %state_names
-
-        $out_state
-        $out_text
-        $perfdata
+my (
+  $version,  $progname,  $opt_critical, $opt_warning,
+  $opt_help, $opt_usage, $opt_version,  $opt_verbose,
+  $opt_testcase,  $opt_proxy,  $opt_tmpdir,  $opt_url,
+  $opt_screenshots,  %opt_casperopts,  
+  %states,  %state_names,  $out_state,  $out_text,
+  $perfdata
 );
 
 $progname = basename($0);
 
 # TODO Make this variable!!!
 my $basedir = '/usr/local/icinga/libexec/check_casperjs/';
-$version = '0.52';
+$version = '0.6';
 
-# get options
-Getopt::Long::Configure('bundling');
 GetOptions (
-   "c=i"   => \$opt_critical,   "critical=i"   => \$opt_critical,
-   "w=i"   => \$opt_warning,    "warning=i"    => \$opt_warning,
-   "h"     => \$opt_help,       "help"         => \$opt_help,
-                                "usage"        => \$opt_usage,
-   "V"     => \$opt_version,    "version"      => \$opt_version,
-   "v"     => \$opt_verbose,    "verbose"      => \$opt_verbose,
-   "p=s"   => \$opt_proxy,      "proxy=s"      => \$opt_proxy,
-   "t=s"   => \$opt_testcase,   "test-case=s"  => \$opt_testcase,
-   "o=s"   => \%opt_casperopts, "casperjs-options=s" => \%opt_casperopts,
-   "d=s"   => \$opt_tmpdir,     "tmpdir=s"     => \$opt_tmpdir,
-   "u=s"   => \$opt_url,        "url=s"        => \$opt_url,
-   "s"     => \$opt_screenshots,"screenshots"  => \$opt_screenshots,
+   "c|critical=i"   => \$opt_critical,
+   "w|warning=i"    => \$opt_warning,
+   "h|help"         => \$opt_help,
+     "usage"        => \$opt_usage,
+   "V|version"      => \$opt_version,
+   "v|verbose"      => \$opt_verbose,
+   "p|proxy=s"      => \$opt_proxy,
+   "t|test-case=s"  => \$opt_testcase,
+   "o|casperjs-options=s" => \%opt_casperopts,
+   "d|tmpdir=s"     => \$opt_tmpdir,
+   "u|url=s"        => \$opt_url,
+   "s|screenshots"  => \$opt_screenshots,
   ) || die "Try `$progname --help' for more information.\n";
 
 # Errorstates
@@ -116,24 +170,9 @@ GetOptions (
         3 => 'UNKNOWN'
         );
 
-# subs
-sub print_help() {
-  print "$progname $version - checks casperjs usecases\n";
-  print "Options are:\n";
-  print "  -c, --critical                  critical threshold in ms for overall duration\n";
-  print "  -w, --warning                   warning threshold in ms for overall duration\n";
-  print "  -o, --casperjs-options          add extra options for casperjs\n";
-  print "  -t, --test-case                 test case for casperjs\n";
-  print "  -h, --help                      display this help and exit\n";
-  print "      --usage                     display a short usage instruction\n";
-  print "  -p  --proxy                     need proxy?\n";
-  print "  -u  --url                       for variable urls\n";
-  print "  -s  --screenshots               capture screenshots on each step.\n";
-  print "  -v, --verbose                   be verbose\n";
-  print "  -V, --version                   output version information and exit\n";
-  print "Requirements:\n";
-  print "  This plugin uses casperjs and phantomjs.\n";
-}
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
+# help and version page and sample config...
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
 
 sub print_usage() {
   print "Usage: $progname -w WARNING -c CRITICAL --url='http://my.example.com' --screenshots -o OPTION1=bla OPTION2=blub OPTIONn=bli\n";
@@ -145,9 +184,8 @@ sub print_version() {
         print "$progname $version\n";
 }
 
-# sub calls
 if ($opt_help) {
-  print_help();
+  pod2usage(1);
   exit $states{'UNKNOWN'};
 }
 if ($opt_usage) {
@@ -162,6 +200,12 @@ unless ($opt_critical && $opt_warning) {
   print_usage();
   exit $states{'UNKNOWN'};
 }
+
+
+
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
+# prepare options for casperjs
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
 
 # add xml-out tmpfile
 # default:
@@ -194,9 +238,7 @@ $casper_opts .= " $basedir/lib/lib_url.js --url=$opt_url" if defined $opt_url;
 # add options for --screenshots
 
 #*************************************************************************************************
-#
 #  MAIN
-#
 #*************************************************************************************************
 
 # convert ms to s
@@ -231,15 +273,15 @@ if ($$ref{'testsuite'}{'errors'} > 0) {
 # collect data from xmlFile
 
 if ($$ref{'testsuite'}{'tests'} == 1) {
-    if (defined $$ref{'testsuite'}{'testcase'}{'time'}) {
-      $perfdata .= "\'$$ref{'testsuite'}{'testcase'}{'name'}\'=$$ref{'testsuite'}{'testcase'}{'time'}s;$opt_warning;$opt_critical;0;$opt_critical ";
-      if (defined $$ref{'testsuite'}{'testcase'}{'failure'}) {
-        $out_text .= "FAIL $$ref{'testsuite'}{'testcase'}{'name'} in $$ref{'testsuite'}{'testcase'}{'time'} s\n";
-        $out_state=2;
-      } else {
-        $out_text .= "PASS $$ref{'testsuite'}{'testcase'}{'name'} in $$ref{'testsuite'}{'testcase'}{'time'} s\n";
-      }
+  if (defined $$ref{'testsuite'}{'testcase'}{'time'}) {
+    $perfdata .= "\'$$ref{'testsuite'}{'testcase'}{'name'}\'=$$ref{'testsuite'}{'testcase'}{'time'}s;$opt_warning;$opt_critical;0;$opt_critical ";
+    if (defined $$ref{'testsuite'}{'testcase'}{'failure'}) {
+      $out_text .= "FAIL $$ref{'testsuite'}{'testcase'}{'name'} in $$ref{'testsuite'}{'testcase'}{'time'} s\n";
+      $out_state=2;
+    } else {
+      $out_text .= "PASS $$ref{'testsuite'}{'testcase'}{'name'} in $$ref{'testsuite'}{'testcase'}{'time'} s\n";
     }
+  }
 } else {
   foreach my $caseRef( @{$$ref{'testsuite'}{'testcase'}} ) {
     if (defined $$caseRef{'time'}) {
