@@ -133,6 +133,7 @@ my (
 
 my $progname = basename($0);
 my $basedir = $Bin;
+print $basedir . "\n";
 my $version = '0.6';
 
 GetOptions (
@@ -238,7 +239,7 @@ $opt_warning  /= 1000;
 $opt_critical /= 1000;
 
 #call casperjs
-print "CALL: casperjs test --pre=lib/lib_default.js $casper_opts $opt_testcase\n" if defined $opt_verbose;
+print "CALL: casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase\n" if defined $opt_verbose;
 my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase`;
 
 print @casper_in if defined $opt_verbose;
@@ -277,6 +278,7 @@ if ($$ref{'testsuite'}{'tests'} == 1) {
 } else {
   foreach my $caseRef( @{$$ref{'testsuite'}{'testcase'}} ) {
     if (defined $$caseRef{'time'}) {
+      $$caseRef{'name'}=~s/'//g;
       $perfdata .= "\'$$caseRef{'name'}\'=$$caseRef{'time'}s;$opt_warning;$opt_critical;0;$opt_critical ";
       if (defined $$caseRef{'failure'}) {
         $out_text .= "FAIL $$caseRef{'name'} in $$caseRef{'time'} s\n";
