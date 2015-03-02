@@ -61,7 +61,7 @@ Requirements:
 This plugin needs casperjs and phantomjs
 
 Usage: 
-check_casperjs.pl -w WARNING -c CRITICAL -t tests/
+check_casperjs.pl -w WARNING -c CRITICAL -t tests/simple_example.js
 check_casperjs.pl -w WARNING -c CRITICAL --url='http://my.example.com' --screenshots -o OPTION1=bla OPTION2=blub OPTIONn=bli
 
 =head1 OPTIONS
@@ -114,7 +114,6 @@ output version information and exit
 
 =cut
 
-
 use strict;
 use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Usage;
@@ -122,53 +121,46 @@ use File::Basename;
 use Data::Dumper;
 use XML::Simple;
 
+use FindBin qw($Bin);
+
 # declaration of variables
 my (
-  $version,  $progname,  $opt_critical, $opt_warning,
-  $opt_help, $opt_usage, $opt_version,  $opt_verbose,
-  $opt_testcase,  $opt_proxy,  $opt_tmpdir,  $opt_url,
-  $opt_screenshots,  %opt_casperopts,  
-  %states,  %state_names,  $out_state,  $out_text,
-  $perfdata
+  $opt_critical, $opt_warning, $opt_help,     $opt_usage, 
+  $opt_version,  $opt_verbose, $opt_testcase, $opt_proxy,
+  $opt_tmpdir,   $opt_url, $opt_screenshots,  %opt_casperopts,  
+  %states, %state_names,   $out_state, $out_text, $perfdata
 );
 
-$progname = basename($0);
-
-# TODO Make this variable!!!
-my $basedir = '/usr/local/icinga/libexec/check_casperjs/';
-$version = '0.6';
+my $progname = basename($0);
+my $basedir = $Bin;
+my $version = '0.6';
 
 GetOptions (
-   "c|critical=i"   => \$opt_critical,
-   "w|warning=i"    => \$opt_warning,
-   "h|help"         => \$opt_help,
-     "usage"        => \$opt_usage,
-   "V|version"      => \$opt_version,
-   "v|verbose"      => \$opt_verbose,
-   "p|proxy=s"      => \$opt_proxy,
-   "t|test-case=s"  => \$opt_testcase,
-   "o|casperjs-options=s" => \%opt_casperopts,
-   "d|tmpdir=s"     => \$opt_tmpdir,
-   "u|url=s"        => \$opt_url,
-   "s|screenshots"  => \$opt_screenshots,
-  ) || die "Try `$progname --help' for more information.\n";
+  "c|critical=i"          => \$opt_critical,
+  "w|warning=i"           => \$opt_warning,
+  "h|help"                => \$opt_help,
+  "usage"                 => \$opt_usage,
+  "V|version"             => \$opt_version,
+  "v|verbose"             => \$opt_verbose,
+  "p|proxy=s"             => \$opt_proxy,
+  "t|test-case=s"         => \$opt_testcase,
+  "o|casperjs-options=s"  => \%opt_casperopts,
+  "d|tmpdir=s"            => \$opt_tmpdir,
+  "u|url=s"               => \$opt_url,
+  "s|screenshots"         => \$opt_screenshots,
+) || die "Try `$progname --help' for more information.\n";
 
-# Errorstates
-# Nagios exit states
+# Exit states
 %states = (
-        OK       => 0,
-        WARNING  => 1,
-        CRITICAL => 2,
-        UNKNOWN  => 3
-        );
-
-# Nagios state names
+  OK       => 0, WARNING  => 1,
+  CRITICAL => 2, UNKNOWN  => 3
+);
+# Exit state names
 %state_names = (
-        0 => 'OK',
-        1 => 'WARNING',
-        2 => 'CRITICAL',
-        3 => 'UNKNOWN'
-        );
+  0 => 'OK',       1 => 'WARNING',
+  2 => 'CRITICAL', 3 => 'UNKNOWN'
+);
+
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
 # help and version page and sample config...
@@ -247,7 +239,7 @@ $opt_critical /= 1000;
 
 #call casperjs
 print "CALL: casperjs test --pre=lib/lib_default.js $casper_opts $opt_testcase\n" if defined $opt_verbose;
-my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $opt_testcase`;
+my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase`;
 
 print @casper_in if defined $opt_verbose;
 
