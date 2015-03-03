@@ -10,19 +10,28 @@ phantomjs and casperjs
 
 ### install
 
-get phantomjs from http://phantomjs.org/download.html
+#### phantomjs
 
-copy to a directory
+- get phantomjs from http://phantomjs.org/download.html (Version 1.9.8 has been tested)
 
-link binary to a folder in PATH
-    sudo ln -s /opt/phantomjs/bin/phantomjs /usr/local/bin/
+`wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2`
 
-get casperjs from http://casperjs.org/
 
-copy to a directoy
+- untar/copy to a directory
 
-link binary to a folder in PATH
-    sudo ln -s /opt/casperjs/bin/casperjs /usr/local/bin/
+- link binary to a folder in PATH
+`sudo ln -s /opt/phantomjs/bin/phantomjs /usr/local/bin/`
+
+#### casperjs
+
+- get casperjs from http://casperjs.org/ (Version 1.1-beta3 has been tested)
+
+`wget https://github.com/n1k0/casperjs/zipball/1.1-beta3`
+
+- copy to a directoy
+
+- link binary to a folder in PATH
+`sudo ln -s /opt/casperjs/bin/casperjs /usr/local/bin/`
 
 ## install plugin
 
@@ -32,7 +41,7 @@ link binary to a folder in PATH
 
 ./check_casperjs.pl --help
 
-    check_casperjs.pl 0.51 - checks casperjs usecases
+    check_casperjs.pl 0.61 - checks casperjs usecases
     Options are:
       -c, --critical                  critical threshold in ms for overall duration
       -w, --warning                   warning threshold in ms for overall duration
