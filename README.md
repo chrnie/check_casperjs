@@ -58,8 +58,22 @@ phantomjs and casperjs
       This plugin uses casperjs and phantomjs.
 
 ## Example
+- simple Resurrectio Example
+`./check_casperjs.pl -w 30000 -c 60000 -t tests/Resurrectio_icinga.org.js`
+- wordpress backend example (with static screenshot in /tmp)
+`check_casperjs.pl --warning 50000 --critical 60000 -t tests/wordpress_backend.js --url http://my_wordpress_blog.example.org -o user=testuser -o pass=SecretPassword`
 
-    ./check_casperjs.pl -w 30000 -c 60000 -t tests/Resurrectio_icinga.org.js
+```
+OK - PASS Find an element matching: form[name=loginform] input[name=log] in 0.877 s
+PASS Find an element matching: form[name=loginform] input[name=pwd] in 0.078 s
+PASS Find an element matching: form[name=loginform] input[type=submit] in 0.241 s
+PASS Find an element matching: div#wpadminbar in 1.853 s
+PASS Find an element matching: #wp-admin-bar-logout > a:nth-child(1) in 0.898 s
+PASS Current url matches the provided pattern in 0.846 s
+|'Find an element matching: form[name=loginform] input[name=log]'=0.877s;50;60;0;60 'Find an element matching: form[name=loginform] input[name=pwd]'=0.078s;50;60;0;60 'Find an element matching: form[name=loginform] input[type=submit]'=0.241s;50;60;0;60 'Find an element matching: div#wpadminbar'=1.853s;50;60;0;60 'Find an element matching: #wp-admin-bar-logout > a:nth-child(1)'=0.898s;50;60;0;60 'Current url matches the provided pattern'=0.846s;50;60;0;60 'total'=4.793s;50;60;0;60
+```
+
+
 
 ## Resurrectio
 
