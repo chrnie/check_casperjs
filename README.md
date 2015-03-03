@@ -82,4 +82,11 @@ You can grab it from the Chrome App Market.
 
 https://chrome.google.com/webstore/detail/resurrectio/kicncbplfjgjlliddogifpohdhkbjogm
 
+## Download
 
+`git clone git://git.netways.org/plugins/check_casperjs.git`
+
+or
+
+`wget https://git.netways.org/plugins/check_casperjs/archive-tarball/master`
+`tar xf master`
