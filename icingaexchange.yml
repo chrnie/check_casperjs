@@ -13,6 +13,6 @@ releases:
     files: 
       - 
         name: master
-        url: "file:///tarball/master"
+        url: "https://github.com/chrnie/check_casperjs/tarball/master"
         description: "tar ball"
         checksum: b458cb22b2a173b32d6c818e6fbd5323
