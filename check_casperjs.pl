@@ -62,7 +62,7 @@ This plugin needs casperjs and phantomjs
 
 Usage: 
 check_casperjs.pl -w WARNING -c CRITICAL -t tests/simple_example.js
-check_casperjs.pl -w WARNING -c CRITICAL --url='http://my.example.com' --screenshots -o OPTION1=bla OPTION2=blub OPTIONn=bli
+check_casperjs.pl --warning 50000 --critical 60000 --testcase tests/wordpress_backend.js --url http://my_wordpress_blog.example.org -o user=testuser -o pass=SecretPassword
 
 =head1 OPTIONS
 
@@ -80,7 +80,7 @@ warning threshold in ms for overall duration
 
 add extra options for casperjs
 
-=item -t|--test-case
+=item -t|--testcase
 
 test case for casperjs
 
@@ -143,7 +143,7 @@ GetOptions (
   "V|version"             => \$opt_version,
   "v|verbose"             => \$opt_verbose,
   "p|proxy=s"             => \$opt_proxy,
-  "t|test-case=s"         => \$opt_testcase,
+  "t|testcase=s"         => \$opt_testcase,
   "o|casperjs-options=s"  => \%opt_casperopts,
   "d|tmpdir=s"            => \$opt_tmpdir,
   "u|url=s"               => \$opt_url,
@@ -167,7 +167,7 @@ GetOptions (
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * #
 
 sub print_usage() {
-  print "Usage: $progname -w WARNING -c CRITICAL --url='http://my.example.com' --screenshots -o OPTION1=bla OPTION2=blub OPTIONn=bli\n";
+  print "Usage: $progname -w WARNING -c CRITICAL -t tests/testcase.js --url='http://my.example.com' --screenshots -o OPTION1=foo OPTION2=bar OPTIONn=blubb\n";
   print "       $progname --help\n";
   print "       $progname --version\n";
 }

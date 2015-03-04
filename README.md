@@ -8,13 +8,18 @@ Monitoring Plugin to integrate casperjs in icinga/nagios/shinken
 
 phantomjs and casperjs
 
-### install
+### Perl libs:
 
-#### phantomjs
+- XML::Simple
+
+## install Requirements
+
+### phantomjs
 
 - get phantomjs from http://phantomjs.org/download.html (Version 1.9.8 has been tested)
 
-`wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2`
+  - `wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2`
+  - `tar xf phantomjs-1.9.8-linux-x86_64.tar.bz2`
 
 
 - untar/copy to a directory
@@ -22,16 +27,21 @@ phantomjs and casperjs
 - link binary to a folder in PATH
 `sudo ln -s /opt/phantomjs/bin/phantomjs /usr/local/bin/`
 
-#### casperjs
+### casperjs
 
 - get casperjs from http://casperjs.org/ (Version 1.1-beta3 has been tested)
-
-`wget https://github.com/n1k0/casperjs/zipball/1.1-beta3`
+  - `wget https://github.com/n1k0/casperjs/tarball/1.1-beta3`
+  - `tar xf 1.1-beta3`
 
 - copy to a directoy
 
 - link binary to a folder in PATH
-`sudo ln -s /opt/casperjs/bin/casperjs /usr/local/bin/`
+  - `sudo ln -s /opt/casperjs/bin/casperjs /usr/local/bin/`
+
+### XML::Simple
+
+#### Debian/Ubuntu
+`aptitude install libxml-simple-perl`
 
 ## install plugin
 
@@ -84,9 +94,9 @@ https://chrome.google.com/webstore/detail/resurrectio/kicncbplfjgjlliddogifpohdh
 
 ## Download
 
-`git clone git://git.netways.org/plugins/check_casperjs.git`
+- `git clone git://git.netways.org/plugins/check_casperjs.git`
 
 or
 
-`wget https://git.netways.org/plugins/check_casperjs/archive-tarball/master`
-`tar xf master`
+- `wget https://git.netways.org/plugins/check_casperjs/archive-tarball/master`
+- `tar xf master`
