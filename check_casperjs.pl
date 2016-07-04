@@ -112,12 +112,21 @@ be verbose
 
 output version information and exit
 
+=item --local-storage
+
+enable local storage
+
+=item --local-storage-path
+
+Optional: Set path to store the local storage. Will create temporary directory if not set.
+
 =cut
 
 use strict;
 use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Usage;
 use File::Basename;
+use File::Path 'remove_tree';
 use Data::Dumper;
 use XML::Simple;
 
@@ -128,7 +137,8 @@ my (
   $opt_critical, $opt_warning, $opt_help,     $opt_usage, 
   $opt_version,  $opt_verbose, $opt_testcase, $opt_proxy,
   $opt_tmpdir,   $opt_url, $opt_screenshots,  %opt_casperopts,  
-  %states, %state_names,   $out_state, $out_text, $perfdata
+  %states, %state_names,   $out_state, $out_text, $perfdata,
+  $opt_local_storage, $opt_local_storage_path
 );
 
 my $progname = basename($0);
@@ -148,6 +158,8 @@ GetOptions (
   "d|tmpdir=s"            => \$opt_tmpdir,
   "u|url=s"               => \$opt_url,
   "s|screenshots"         => \$opt_screenshots,
+  "local-storage"         => \$opt_local_storage,
+  "local-storage-path"    => \$opt_local_storage_path,
 ) || die "Try `$progname --help' for more information.\n";
 
 # Exit states
@@ -206,10 +218,11 @@ unless (-d $opt_tmpdir ) {
   mkdir $opt_tmpdir
 }
 my $tmpfile = "$opt_tmpdir/casper_" . time() . "_" . int(rand(99999)) . ".tmp";
-while ( -e $opt_tmpdir ) {
-  $opt_tmpdir .= "1";
-}
+#while ( -e $opt_tmpdir ) {
+#  $opt_tmpdir .= "1";
+#}
 print "tmpfile: $tmpfile\n" if defined $opt_verbose;
+
 
 # rebuild options
 my $casper_opts;
@@ -227,6 +240,15 @@ $casper_opts .= " --xunit=$tmpfile --no-colors";
 # add options for --url
 $casper_opts .= " $basedir/lib/lib_url.js --url=$opt_url" if defined $opt_url;
 
+if (defined $opt_local_storage) {
+  $opt_local_storage_path = "$opt_tmpdir/local_storage_" . time() . "_" . int(rand(99999)) if not defined $opt_local_storage_path;
+  unless (-d $opt_local_storage_path ) {
+    mkdir $opt_local_storage_path;
+  }
+  print "local-storage path: $opt_local_storage_path\n" if defined $opt_verbose;
+  $casper_opts .= " --local-storage-path=$opt_local_storage_path";
+}
+
 # add options for --screenshots
 
 #*************************************************************************************************
@@ -242,6 +264,10 @@ print "CALL: casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $based
 my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase`;
 
 print @casper_in if defined $opt_verbose;
+
+if (defined $opt_local_storage_path and -d $opt_local_storage_path) {
+  remove_tree($opt_local_storage_path);
+}
 
 # Read tmpfile
 my $ref = XMLin($tmpfile, KeyAttr => ['testcase']);
