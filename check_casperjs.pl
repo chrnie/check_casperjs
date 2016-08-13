@@ -127,6 +127,7 @@ use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Usage;
 use File::Basename;
 use File::Path 'remove_tree';
+use File::Spec::Functions qw(canonpath catfile file_name_is_absolute);
 use Data::Dumper;
 use XML::Simple;
 
@@ -249,6 +250,19 @@ if (defined $opt_local_storage) {
   $casper_opts .= " --local-storage-path=$opt_local_storage_path";
 }
 
+my $testcase_filename;
+if (file_name_is_absolute($opt_testcase)) {
+  $testcase_filename = canonpath($opt_testcase);
+} else {
+  $testcase_filename = canonpath(catfile($basedir, $opt_testcase));
+}
+
+if (! -e $testcase_filename) {
+  $out_state = 3;
+  print "$state_names{$out_state} - Unable to find testcase '$testcase_filename'\n";
+  exit $out_state;
+}
+
 # add options for --screenshots
 
 #*************************************************************************************************
@@ -260,8 +274,8 @@ $opt_warning  /= 1000;
 $opt_critical /= 1000;
 
 #call casperjs
-print "CALL: casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase\n" if defined $opt_verbose;
-my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $basedir/$opt_testcase`;
+print "CALL: casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $testcase_filename\n" if defined $opt_verbose;
+my @casper_in = `casperjs test --pre=$basedir/lib/lib_default.js $casper_opts $testcase_filename`;
 
 print @casper_in if defined $opt_verbose;
 
