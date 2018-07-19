@@ -16,24 +16,25 @@ phantomjs and casperjs
 
 ### phantomjs
 
-- get phantomjs from http://phantomjs.org/download.html (Version 1.9.8 has been tested)
+- get phantomjs from http://phantomjs.org/download.html (Version 2.1.1 has been tested)
 
-  - `wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2`
-  - `tar xf phantomjs-1.9.8-linux-x86_64.tar.bz2`
+  - `wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2`
+
+  - `tar xf phantomjs-2.1.1-linux-x86_64.tar.bz2`
 
 
-- untar/copy to a directory
+- untar/copy to a directory (LSB says /opt)
 
 - link binary to a folder in PATH
 `sudo ln -s /opt/phantomjs/bin/phantomjs /usr/local/bin/`
 
 ### casperjs
 
-- get casperjs from http://casperjs.org/ (Version 1.1-beta3 has been tested)
-  - `wget https://github.com/n1k0/casperjs/tarball/1.1-beta3`
-  - `tar xf 1.1-beta3`
+- get casperjs from http://casperjs.org/ (Version 1.1.4-1 has been tested)
+  - `wget https://github.com/casperjs/casperjs/archive/1.1.4-1.zip`
+  - `unzip 1.1.4-1.zip`
 
-- copy to a directoy
+- copy to a directory (LSB says /opt)
 
 - link binary to a folder in PATH
   - `sudo ln -s /opt/casperjs/bin/casperjs /usr/local/bin/`
@@ -42,6 +43,9 @@ phantomjs and casperjs
 
 #### Debian/Ubuntu
 `aptitude install libxml-simple-perl`
+
+#### RedHat/CentOS
+`yum install perl-XML-Simple.noarch`
 
 ## install plugin
 
@@ -82,8 +86,6 @@ PASS Find an element matching: #wp-admin-bar-logout > a:nth-child(1) in 0.898 s
 PASS Current url matches the provided pattern in 0.846 s
 |'Find an element matching: form[name=loginform] input[name=log]'=0.877s;50;60;0;60 'Find an element matching: form[name=loginform] input[name=pwd]'=0.078s;50;60;0;60 'Find an element matching: form[name=loginform] input[type=submit]'=0.241s;50;60;0;60 'Find an element matching: div#wpadminbar'=1.853s;50;60;0;60 'Find an element matching: #wp-admin-bar-logout > a:nth-child(1)'=0.898s;50;60;0;60 'Current url matches the provided pattern'=0.846s;50;60;0;60 'total'=4.793s;50;60;0;60
 ```
-
-
 
 ## Resurrectio
 
